@@ -1,6 +1,6 @@
 # portfolio-project
 
-# TECH STACK
+** TECH STACK
 
 Database - PostgreSQL
 Deployment - Docker
