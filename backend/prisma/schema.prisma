@@ -34,13 +34,15 @@ model Image {
   caption   String?
   project   Project? @relation(fields: [projectId], references: [id])
   projectId Int?
+  experience    Experience? @relation(fields: [experienceId], references: [id])
+  experienceId  Int?
 }
 
 model Experience {
   id          Int      @id @default(autoincrement())
   title       String
-  category    String
   description Json
   startDate   DateTime
   endDate     DateTime?
+  images      Image[]
 }
