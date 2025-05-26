@@ -2,10 +2,7 @@
 
 TECH STACK
 
-Database - PostgreSQL
-Deployment - Docker
-Backend - Node.js
-Frontend - React, Three.js
+Database - PostgreSQL 🤠 \ Deployment - Docker 😈\ Backend - Node.js 💀\ Frontend - React, Three.js 🐗
 
 TO - DO
 1. DOCKER & PostgreSQL ✅✅✅
