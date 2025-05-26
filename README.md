@@ -1,10 +1,8 @@
 # portfolio-project
 
-#TECH STACK SHALL INCLUDE
-Database - PostgreSQL
-Deployment - Docker
-Backend - Node.js
-Frontend - React, Three.js
+TECH STACK
+
+Database - PostgreSQL 🤠 \ Deployment - Docker 😈\ Backend - Node.js 💀\ Frontend - React, Three.js 🐗
 
 TO - DO
 1. DOCKER & PostgreSQL ✅✅✅
