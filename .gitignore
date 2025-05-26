@@ -9,6 +9,5 @@ frontend/.env
 # Prisma
 **/.prisma/
 
-
 # OS/system files
 .DS_Store
