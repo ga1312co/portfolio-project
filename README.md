@@ -1,6 +1,7 @@
 # portfolio-project
 
-#TECH STACK SHALL INCLUDE
+# TECH STACK
+
 Database - PostgreSQL
 Deployment - Docker
 Backend - Node.js
