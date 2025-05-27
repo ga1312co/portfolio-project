@@ -5,6 +5,7 @@ backend/.env
 # React frontend
 frontend/node_modules/
 frontend/.env
+frontend/blender/
 
 # Prisma
 **/.prisma/
