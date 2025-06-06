@@ -3,15 +3,25 @@ import './App.css';
 
 function App() {
   return (
-    <>
-      {/* 3D Scene area - takes up 400vh for camera movement */}
-      <div className="scene-wrapper">
-        <div className="canvas-container">
-          <SceneCanvas />
-        </div>
-      </div>
+    <div className="app-container">
+      {/* Navigation Header */}
+      <header className="header">
+        <nav className="nav">
+          <div className="nav-brand">
+            <h1>Gabriels Portfölj</h1>
+          </div>
+          <ul className="nav-links">
+            <li><a href="#home">Home</a></li>
+          </ul>
+        </nav>
+      </header>
       
-      {/* Footer appears after the 3D journey */}
+      {/* 3D Scene Section - takes up specific height */}
+      <section className="scene-section" id="home">
+        <SceneCanvas />
+      </section>
+      
+      {/* Footer Section - appears below the scene */}
       <footer className="footer">
         <div className="footer-content">
           <h2>Contact</h2>
@@ -29,7 +39,7 @@ function App() {
           </div>
         </div>
       </footer>
-    </>
+    </div>
   );
 }
 

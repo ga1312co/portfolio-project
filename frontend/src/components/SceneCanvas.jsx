@@ -10,18 +10,23 @@ function ScrollCameraController() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const cameraScrollHeight = window.innerHeight * 3.8; // 380vh for camera movement
-      const pauseScrollHeight = window.innerHeight * 4.2; // 420vh - pause at final position
+      const sceneSection = document.querySelector('.scene-section');
+      if (!sceneSection) return;
       
-      if (scrollY <= cameraScrollHeight) {
-        // Camera movement phase (0vh to 380vh)
-        scrollRef.current = Math.min(Math.max(scrollY / cameraScrollHeight, 0), 1);
-      } else if (scrollY <= pauseScrollHeight) {
-        // Pause phase (380vh to 420vh) - stay at final camera position
-        scrollRef.current = 1;
+      const sectionTop = sceneSection.offsetTop;
+      const sectionHeight = sceneSection.offsetHeight;
+      const scrollY = window.scrollY;
+      
+      // Calculate scroll progress within the scene section
+      const sectionScrollStart = sectionTop;
+      const sectionScrollEnd = sectionTop + sectionHeight - window.innerHeight;
+      
+      if (scrollY >= sectionScrollStart && scrollY <= sectionScrollEnd) {
+        const sectionProgress = (scrollY - sectionScrollStart) / (sectionScrollEnd - sectionScrollStart);
+        scrollRef.current = Math.min(Math.max(sectionProgress, 0), 1);
+      } else if (scrollY < sectionScrollStart) {
+        scrollRef.current = 0;
       } else {
-        // Footer phase (after 420vh) - keep camera at final position
         scrollRef.current = 1;
       }
     };
@@ -34,16 +39,48 @@ function ScrollCameraController() {
     };
   }, []);
 
-  const cameraPositions = [
-    new THREE.Vector3(-20, 15, -25),
-    new THREE.Vector3(-15, 12, -10),
-    new THREE.Vector3(-10, 10, 0),
-    new THREE.Vector3(-5, 8, 5)
+  // Easing functions for smoother camera movement
+  const easeInOutCubic = (t) => {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  };
+
+  const easeInOutQuart = (t) => {
+    return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+  };
+
+  const easeOutBack = (t) => {
+    const c1 = 1.70158;
+    const c3 = c1 + 1;
+    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+  };
+
+  // 4 Camera positions with their look-at targets
+  const cameraSetup = [
+    {
+      position: new THREE.Vector3(-25, 12, -20),
+      lookAt: new THREE.Vector3(0, 3, 0),
+      name: "Position 1: Wide Overview"
+    },
+    {
+      position: new THREE.Vector3(-1.5, 3.5, -6),
+      lookAt: new THREE.Vector3(0, 3, 0),
+      name: "Position 2: Projects View"
+    },
+    {
+      position: new THREE.Vector3(1.5, 8.5, -1),
+      lookAt: new THREE.Vector3(6, 8.5, 0.5),
+      name: "Position 3: Experience View"
+    },
+    {
+      position: new THREE.Vector3(5, 7, 6),
+      lookAt: new THREE.Vector3(5, 2, 7),
+      name: "Position 4: This Page View"
+    }
   ];
 
   useFrame(() => {
     const scrollT = scrollRef.current;
-    const totalSteps = cameraPositions.length - 1;
+    const totalSteps = cameraSetup.length - 1;
 
     if (totalSteps === 0) return;
 
@@ -52,13 +89,28 @@ function ScrollCameraController() {
     const nextIndex = Math.min(index + 1, totalSteps);
     
     const localProgress = stepSize > 0 ? (scrollT - stepSize * index) / stepSize : 0;
-    const t = Math.min(Math.max(localProgress, 0), 1);
+    
+    // Apply easing to the interpolation factor
+    const easedT = easeInOutCubic(Math.min(Math.max(localProgress, 0), 1));
 
-    const from = cameraPositions[index] || cameraPositions[0];
-    const to = cameraPositions[nextIndex] || cameraPositions[cameraPositions.length - 1];
+    // Get current and next camera setups
+    const from = cameraSetup[index] || cameraSetup[0];
+    const to = cameraSetup[nextIndex] || cameraSetup[cameraSetup.length - 1];
 
-    camera.position.lerpVectors(from, to, t);
-    camera.lookAt(0, 2.5, 0);
+    // Interpolate position with easing
+    camera.position.lerpVectors(from.position, to.position, easedT);
+    
+    // Interpolate look-at target with easing
+    const lookAtTarget = new THREE.Vector3().lerpVectors(from.lookAt, to.lookAt, easedT);
+    camera.lookAt(lookAtTarget);
+
+    // Debug: Log current position info (remove when satisfied)
+    if (Math.random() < 0.01) {
+      console.log(`📷 Camera Progress: ${(scrollT * 100).toFixed(1)}%`);
+      console.log(`📍 Between: ${from.name} → ${to.name}`);
+      console.log(`🎯 Position: [${camera.position.x.toFixed(1)}, ${camera.position.y.toFixed(1)}, ${camera.position.z.toFixed(1)}]`);
+      console.log(`👀 Looking at: [${lookAtTarget.x.toFixed(1)}, ${lookAtTarget.y.toFixed(1)}, ${lookAtTarget.z.toFixed(1)}]`);
+    }
   });
 
   return null;
@@ -66,11 +118,51 @@ function ScrollCameraController() {
 
 export default function SceneCanvas() {
   return (
-    <Canvas camera={{fov: 50 }} shadows>
-      <pointLight position={[5, 15, 5]} intensity={80} />
-      <pointLight position={[-5, 15, -5]} intensity={80} />
-      <pointLight position={[5, 15, -5]} intensity={80} />
-      <pointLight position={[-5, 15, 5]} intensity={80} />
+    <Canvas 
+      camera={{
+        fov: 50,
+        position: [-25, 12, -20]
+      }} 
+      shadows={{ type: "VSMShadowMap" }}
+      style={{ width: '100%', height: '100%' }}
+    >
+      {/* First directional light with higher resolution shadows */}
+      <directionalLight 
+        position={[1, 15, 1]} 
+        intensity={0.5}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-near={1}
+        shadow-camera-far={30}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
+        shadow-bias={-0.0005}
+        shadow-normalBias={0.05}
+      />
+
+      {/* Second directional light with higher resolution shadows */}
+      <directionalLight 
+        position={[-10, 15, -8]} 
+        intensity={0.6}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-near={1}
+        shadow-camera-far={30}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
+        shadow-bias={-0.001}
+        shadow-normalBias={0.1}
+      />
+
+      {/* Soft ambient light */}
+      <ambientLight intensity={0.6} />
+      
       <Suspense fallback={null}>
         <WaitingRoomScene />
       </Suspense>
