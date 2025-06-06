@@ -1,14 +1,17 @@
 import { useGLTF } from '@react-three/drei';
 import { useEffect, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function WaitingRoomScene() {
+export default function WaitingRoomScene({ onHover, onMouseMove }) {
   const { scene } = useGLTF('/models/WaitingRoom2.glb');
   const plantsRef = useRef([]);
+  const clickablesRef = useRef([]);
+  const { camera, gl } = useThree();
 
   useEffect(() => {
     plantsRef.current = [];
+    clickablesRef.current = [];
 
     scene.traverse((child) => {
       if (child.isMesh) {
@@ -31,7 +34,7 @@ export default function WaitingRoomScene() {
           }
         }
         
-        // Find your specific plants by name
+        // Find plants
         const plantNames = ['plant_leaves', 'plant_tree'];
         const isPlant = plantNames.includes(child.name.toLowerCase());
         
@@ -41,37 +44,90 @@ export default function WaitingRoomScene() {
             originalRotation: child.rotation.clone(),
             originalPosition: child.position.clone(),
             animationOffset: Math.random() * Math.PI * 2,
-            swayIntensity: child.name === 'plant_leaves' ? 0.03 : 0.015, // Leaves sway more than tree
+            swayIntensity: child.name === 'plant_leaves' ? 0.03 : 0.015,
             name: child.name
           });
           console.log('🌱 Found plant to animate:', child.name);
+        }
+
+        // Find clickable objects - make case insensitive
+        const clickableNames = ['clickable_projects', 'clickable_about', 'clickable_experience'];
+        const isClickable = clickableNames.some(name => 
+          child.name.toLowerCase().includes(name)
+        );
+        
+        if (isClickable) {
+          clickablesRef.current.push(child);
+          console.log('🖱️ Found clickable object:', child.name);
         }
       }
     });
     
     console.log(`🌿 Found ${plantsRef.current.length} plants to animate`);
+    console.log(`🖱️ Found ${clickablesRef.current.length} clickable objects`);
   }, [scene]);
 
-  // Animation loop
+
+  useEffect(() => {
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const handleMouseMove = (event) => {
+      const canvas = gl.domElement;
+      const rect = canvas.getBoundingClientRect();
+      
+      // Track actual mouse position for popup positioning
+      const mousePos = {
+        x: event.clientX,
+        y: event.clientY
+      };
+      onMouseMove(mousePos);
+      
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      
+      raycaster.setFromCamera(mouse, camera);
+      
+      if (clickablesRef.current.length > 0) {
+        const intersects = raycaster.intersectObjects(clickablesRef.current);
+        
+        if (intersects.length > 0) {
+          const objectName = intersects[0].object.name;
+          console.log('Hovering object:', objectName); // Debug log
+          onHover(objectName);
+          canvas.style.cursor = 'pointer';
+        } else {
+          onHover(null);
+          canvas.style.cursor = 'default';
+        }
+      }
+    };
+
+    const canvas = gl.domElement;
+    canvas.addEventListener('mousemove', handleMouseMove);
+    
+    return () => {
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.style.cursor = 'default';
+    };
+  }, [camera, gl, onHover, onMouseMove]);
+
+  // Animation loop for plants
   useFrame(({ clock }) => {
     const time = clock.getElapsedTime();
     
     plantsRef.current.forEach((plant) => {
-      // Different animation styles for different plants
       if (plant.name === 'plant_leaves') {
-        // Leaves: More dramatic swaying
         const swayX = Math.sin(time * 1 + plant.animationOffset) * plant.swayIntensity;
         const swayZ = Math.cos(time * 1 + plant.animationOffset) * plant.swayIntensity * 0.7;
         
         plant.mesh.rotation.x = plant.originalRotation.x + swayX;
         plant.mesh.rotation.z = plant.originalRotation.z + swayZ;
         
-        // Slight vertical movement
         const bob = Math.sin(time * 1.2 + plant.animationOffset) * 0.01;
         plant.mesh.position.y = plant.originalPosition.y + bob;
         
       } else if (plant.name === 'plant_tree') {
-        // Tree: Subtle swaying
         const swayX = Math.sin(time * 0.4 + plant.animationOffset) * plant.swayIntensity;
         const swayZ = Math.cos(time * 0.3 + plant.animationOffset) * plant.swayIntensity * 0.5;
         

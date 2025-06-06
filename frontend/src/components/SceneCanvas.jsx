@@ -1,8 +1,9 @@
 // SceneCanvas.jsx
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import WaitingRoomScene from './WaitingRoomScene';
+import HoverPopup from './HoverPopup';
 
 function ScrollCameraController() {
   const { camera } = useThree();
@@ -104,69 +105,76 @@ function ScrollCameraController() {
     const lookAtTarget = new THREE.Vector3().lerpVectors(from.lookAt, to.lookAt, easedT);
     camera.lookAt(lookAtTarget);
 
-    // Debug: Log current position info (remove when satisfied)
-    if (Math.random() < 0.01) {
-      console.log(`📷 Camera Progress: ${(scrollT * 100).toFixed(1)}%`);
-      console.log(`📍 Between: ${from.name} → ${to.name}`);
-      console.log(`🎯 Position: [${camera.position.x.toFixed(1)}, ${camera.position.y.toFixed(1)}, ${camera.position.z.toFixed(1)}]`);
-      console.log(`👀 Looking at: [${lookAtTarget.x.toFixed(1)}, ${lookAtTarget.y.toFixed(1)}, ${lookAtTarget.z.toFixed(1)}]`);
-    }
   });
 
   return null;
 }
 
 export default function SceneCanvas() {
+  const [hoveredObject, setHoveredObject] = useState(null);
+  const [mousePosition, setMousePosition] = useState(null);
+
   return (
-    <Canvas 
-      camera={{
-        fov: 50,
-        position: [-25, 12, -20]
-      }} 
-      shadows={{ type: "VSMShadowMap" }}
-      style={{ width: '100%', height: '100%' }}
-    >
-      {/* First directional light with higher resolution shadows */}
-      <directionalLight 
-        position={[1, 15, 1]} 
-        intensity={0.5}
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-near={1}
-        shadow-camera-far={30}
-        shadow-camera-left={-20}
-        shadow-camera-right={20}
-        shadow-camera-top={20}
-        shadow-camera-bottom={-20}
-        shadow-bias={-0.0005}
-        shadow-normalBias={0.05}
-      />
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <Canvas 
+        camera={{
+          fov: 50,
+          position: [-25, 12, -20]
+        }} 
+        shadows={{ type: "VSMShadowMap" }}
+        style={{ width: '100%', height: '100%' }}
+      >
+        {/* First directional light with higher resolution shadows */}
+        <directionalLight 
+          position={[1, 15, 1]} 
+          intensity={0.5}
+          castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          shadow-camera-near={1}
+          shadow-camera-far={30}
+          shadow-camera-left={-20}
+          shadow-camera-right={20}
+          shadow-camera-top={20}
+          shadow-camera-bottom={-20}
+          shadow-bias={-0.0005}
+          shadow-normalBias={0.05}
+        />
 
-      {/* Second directional light with higher resolution shadows */}
-      <directionalLight 
-        position={[-10, 15, -8]} 
-        intensity={0.6}
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-near={1}
-        shadow-camera-far={30}
-        shadow-camera-left={-20}
-        shadow-camera-right={20}
-        shadow-camera-top={20}
-        shadow-camera-bottom={-20}
-        shadow-bias={-0.001}
-        shadow-normalBias={0.1}
-      />
+        {/* Second directional light with higher resolution shadows */}
+        <directionalLight 
+          position={[-10, 15, -8]} 
+          intensity={0.6}
+          castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          shadow-camera-near={1}
+          shadow-camera-far={30}
+          shadow-camera-left={-20}
+          shadow-camera-right={20}
+          shadow-camera-top={20}
+          shadow-camera-bottom={-20}
+          shadow-bias={-0.001}
+          shadow-normalBias={0.1}
+        />
 
-      {/* Soft ambient light */}
-      <ambientLight intensity={0.6} />
+        {/* Soft ambient light */}
+        <ambientLight intensity={0.6} />
+        
+        <Suspense fallback={null}>
+          <WaitingRoomScene 
+            onHover={setHoveredObject} 
+            onMouseMove={setMousePosition}
+          />
+        </Suspense>
+        <ScrollCameraController />
+      </Canvas>
       
-      <Suspense fallback={null}>
-        <WaitingRoomScene />
-      </Suspense>
-      <ScrollCameraController />
-    </Canvas>
+      {/* Use the dedicated popup component with mouse position */}
+      <HoverPopup 
+        hoveredObject={hoveredObject} 
+        mousePosition={mousePosition} 
+      />
+    </div>
   );
 }

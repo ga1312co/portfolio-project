@@ -1,0 +1,217 @@
+.hover-popup {
+  position: fixed;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
+  backdrop-filter: blur(10px);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  pointer-events: auto;
+  font-family: Helvetica, sans-serif;
+  color: #333;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 350px;
+  min-width: 300px;
+  max-height: 80vh; /* Limit popup height */
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.popup-header {
+  margin-bottom: 16px;
+}
+
+.popup-title {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.popup-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.popup-description {
+  margin: 0 0 16px 0;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.popup-section {
+  margin-bottom: 16px;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Scrollable content container */
+.scrollable-content {
+  max-height: 200px; /* Limit height of scrollable area */
+  overflow-y: auto;
+  padding-right: 8px; /* Space for scrollbar */
+  margin-right: -8px;
+}
+
+/* Custom scrollbar styling */
+.scrollable-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 3px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.4);
+  border-radius: 3px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.6);
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  font-size: 10px;
+  color: #667eea;
+  text-align: center;
+  margin-top: 8px;
+  padding: 4px 8px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 4px;
+  font-style: italic;
+}
+
+.list-item {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.item-title {
+  color: #333;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.item-description {
+  font-size: 11px;
+  color: #777;
+}
+
+.detail-item {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.popup-cta {
+  font-size: 12px;
+  color: #667eea;
+  font-weight: 600;
+  text-align: center;
+  padding: 8px 0;
+  border-top: 1px solid rgba(102, 126, 234, 0.2);
+  margin-top: 8px;
+}
+
+.hover-popup:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.item-tech {
+  margin-top: 4px;
+  font-size: 10px;
+  color: #888;
+  font-style: italic;
+}
+
+.item-tech small {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #667eea;
+}
+
+/* Individual project GitHub links */
+.item-github {
+  margin-top: 6px;
+}
+
+.github-link {
+  font-size: 10px;
+  color: #667eea;
+  text-decoration: none;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.github-link:hover {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Resume link section */
+.popup-resume-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(102, 126, 234, 0.2);
+  text-align: center;
+}
+
+.resume-link {
+  font-size: 12px;
+  color: #667eea;
+  text-decoration: none;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(102, 126, 234, 0.25));
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.resume-link:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.25), rgba(102, 126, 234, 0.35));
+  border-color: rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+@media (max-width: 768px) {
+  .hover-popup {
+    max-width: 280px;
+    min-width: 250px;
+    padding: 20px;
+  }
+  
+  .popup-title {
+    font-size: 16px;
+  }
+  
+  .popup-description {
+    font-size: 12px;
+  }
+}
