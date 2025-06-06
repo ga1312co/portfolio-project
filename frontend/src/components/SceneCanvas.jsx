@@ -10,18 +10,23 @@ function ScrollCameraController() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const cameraScrollHeight = window.innerHeight * 3.8; // 380vh for camera movement
-      const pauseScrollHeight = window.innerHeight * 4.2; // 420vh - pause at final position
+      const sceneSection = document.querySelector('.scene-section');
+      if (!sceneSection) return;
       
-      if (scrollY <= cameraScrollHeight) {
-        // Camera movement phase (0vh to 380vh)
-        scrollRef.current = Math.min(Math.max(scrollY / cameraScrollHeight, 0), 1);
-      } else if (scrollY <= pauseScrollHeight) {
-        // Pause phase (380vh to 420vh) - stay at final camera position
-        scrollRef.current = 1;
+      const sectionTop = sceneSection.offsetTop;
+      const sectionHeight = sceneSection.offsetHeight;
+      const scrollY = window.scrollY;
+      
+      // Calculate scroll progress within the scene section
+      const sectionScrollStart = sectionTop;
+      const sectionScrollEnd = sectionTop + sectionHeight - window.innerHeight;
+      
+      if (scrollY >= sectionScrollStart && scrollY <= sectionScrollEnd) {
+        const sectionProgress = (scrollY - sectionScrollStart) / (sectionScrollEnd - sectionScrollStart);
+        scrollRef.current = Math.min(Math.max(sectionProgress, 0), 1);
+      } else if (scrollY < sectionScrollStart) {
+        scrollRef.current = 0;
       } else {
-        // Footer phase (after 420vh) - keep camera at final position
         scrollRef.current = 1;
       }
     };
@@ -66,11 +71,51 @@ function ScrollCameraController() {
 
 export default function SceneCanvas() {
   return (
-    <Canvas camera={{fov: 50 }} shadows>
-      <pointLight position={[5, 15, 5]} intensity={80} />
-      <pointLight position={[-5, 15, -5]} intensity={80} />
-      <pointLight position={[5, 15, -5]} intensity={80} />
-      <pointLight position={[-5, 15, 5]} intensity={80} />
+    <Canvas 
+      camera={{
+        fov: 50,
+        position: [-20, 15, -25]
+      }} 
+      shadows={{ type: "VSMShadowMap" }}
+      style={{ width: '100%', height: '100%' }}
+    >
+      {/* First directional light with higher resolution shadows */}
+      <directionalLight 
+        position={[0, 15, 1]} 
+        intensity={0.3}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-near={1}
+        shadow-camera-far={30}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
+        shadow-bias={-0.0005}
+        shadow-normalBias={0.05}
+      />
+
+      {/* Second directional light with higher resolution shadows */}
+      <directionalLight 
+        position={[-20, 15, -8]} 
+        intensity={0.4}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-near={1}
+        shadow-camera-far={30}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
+        shadow-bias={-0.001}
+        shadow-normalBias={0.1}
+      />
+
+      {/* Soft ambient light */}
+      <ambientLight intensity={0.5} />
+      
       <Suspense fallback={null}>
         <WaitingRoomScene />
       </Suspense>
