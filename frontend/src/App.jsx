@@ -4,13 +4,20 @@ import './App.css';
 function App() {
   return (
     <div className="app-container">
-      {/* Optional Header - add when ready */}
-      {/* <header className="header">
-        <nav>Navigation content</nav>
-      </header>}
+      {/* Navigation Header */}
+      <header className="header">
+        <nav className="nav">
+          <div className="nav-brand">
+            <h1>Gabriels Portfölj</h1>
+          </div>
+          <ul className="nav-links">
+            <li><a href="#home">Home</a></li>
+          </ul>
+        </nav>
+      </header>
       
       {/* 3D Scene Section - takes up specific height */}
-      <section className="scene-section">
+      <section className="scene-section" id="home">
         <SceneCanvas />
       </section>
       
