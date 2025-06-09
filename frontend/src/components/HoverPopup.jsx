@@ -187,9 +187,12 @@ export default function HoverPopup({ hoveredObjectInfo }) {
 
   if (!showPopup || !popupPosition) return null; 
 
+  // Determine popup type for rendering (for width/height)
+  const renderType = content?.type;
+
   return (
     <div 
-      className={`hover-popup ${isVisibleClass ? 'visible' : ''}`}
+      className={`hover-popup ${isVisibleClass ? 'visible' : ''}${renderType === 'projects' ? ' popup-projects' : ''}`}
       style={{
         position: 'fixed',
         left: `${popupPosition.left}px`,
@@ -235,15 +238,17 @@ export default function HoverPopup({ hoveredObjectInfo }) {
 
                   return (
                     <div key={project.id} className="list-item">
-                      <strong className="item-title">{project.title}</strong>
-                      <span className="item-description">
-                        {projectSummary.length > 120 ? projectSummary.substring(0, 100) + '... Open page to see more' : projectSummary}
-                      </span>
-                      {projectTech.length > 0 && (
-                        <div className="item-tech">
-                          <small>Tech: {projectTech.join(', ')}</small>
-                        </div>
-                      )}
+                      <div className="item-info">
+                        <strong className="item-title">{project.title}</strong>
+                        <span className="item-description">
+                          {projectSummary.length > 120 ? projectSummary.substring(0, 100) + '... Open page to see more' : projectSummary}
+                        </span>
+                        {projectTech.length > 0 && (
+                          <div className="item-tech">
+                            <small>Tech: {projectTech.join(', ')}</small>
+                          </div>
+                        )}
+                      </div>
                       {githubLink && (
                         <div className="item-github">
                           <a 
