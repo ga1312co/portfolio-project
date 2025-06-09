@@ -111,8 +111,11 @@ function ScrollCameraController() {
 }
 
 export default function SceneCanvas() {
-  const [hoveredObject, setHoveredObject] = useState(null);
-  const [mousePosition, setMousePosition] = useState(null);
+  const [hoveredObjectInfo, setHoveredObjectInfo] = useState(null);
+
+  const handleHover = (info) => { // info is { name, bounds } or null
+    setHoveredObjectInfo(info);
+  };
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -163,17 +166,15 @@ export default function SceneCanvas() {
         
         <Suspense fallback={null}>
           <WaitingRoomScene 
-            onHover={setHoveredObject} 
-            onMouseMove={setMousePosition}
+            onHover={handleHover} 
+            onMouseMove={() => {}} // Or a no-op if SceneCanvas doesn't need live mouse coords
           />
         </Suspense>
         <ScrollCameraController />
       </Canvas>
       
-      {/* Use the dedicated popup component with mouse position */}
       <HoverPopup 
-        hoveredObject={hoveredObject} 
-        mousePosition={mousePosition} 
+        hoveredObjectInfo={hoveredObjectInfo} 
       />
     </div>
   );

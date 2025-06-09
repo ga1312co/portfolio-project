@@ -8,6 +8,7 @@ export default function WaitingRoomScene({ onHover, onMouseMove }) {
   const plantsRef = useRef([]);
   const clickablesRef = useRef([]);
   const { camera, gl } = useThree();
+  const lastHoveredObjectNameRef = useRef(null);
 
   useEffect(() => {
     plantsRef.current = [];
@@ -72,16 +73,44 @@ export default function WaitingRoomScene({ onHover, onMouseMove }) {
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
+    const getObjectScreenBounds = (object3D) => {
+      const box = new THREE.Box3().setFromObject(object3D);
+      const corners = [
+        new THREE.Vector3(box.min.x, box.min.y, box.min.z),
+        new THREE.Vector3(box.min.x, box.min.y, box.max.z),
+        new THREE.Vector3(box.min.x, box.max.y, box.min.z),
+        new THREE.Vector3(box.min.x, box.max.y, box.max.z),
+        new THREE.Vector3(box.max.x, box.min.y, box.min.z),
+        new THREE.Vector3(box.max.x, box.min.y, box.max.z),
+        new THREE.Vector3(box.max.x, box.max.y, box.min.z),
+        new THREE.Vector3(box.max.x, box.max.y, box.max.z),
+      ];
+
+      const canvas = gl.domElement;
+      const rect = canvas.getBoundingClientRect();
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+
+      corners.forEach(corner => {
+        const screenPos = corner.project(camera);
+        const x = ((screenPos.x + 1) / 2) * rect.width + rect.left;
+        const y = ((-screenPos.y + 1) / 2) * rect.height + rect.top;
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+      });
+      return { left: minX, top: minY, right: maxX, bottom: maxY, width: maxX - minX, height: maxY - minY };
+    };
+
     const handleMouseMove = (event) => {
       const canvas = gl.domElement;
       const rect = canvas.getBoundingClientRect();
       
-      // Track actual mouse position for popup positioning
-      const mousePos = {
-        x: event.clientX,
-        y: event.clientY
-      };
-      onMouseMove(mousePos);
+      // onMouseMove is still called for general mouse tracking if needed by parent
+      // but not strictly for popup positioning anymore.
+      if (onMouseMove) {
+        onMouseMove({ x: event.clientX, y: event.clientY });
+      }
       
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -92,12 +121,19 @@ export default function WaitingRoomScene({ onHover, onMouseMove }) {
         const intersects = raycaster.intersectObjects(clickablesRef.current);
         
         if (intersects.length > 0) {
-          const objectName = intersects[0].object.name;
-          console.log('Hovering object:', objectName); // Debug log
-          onHover(objectName);
+          const intersectedObject = intersects[0].object;
+          const objectName = intersectedObject.name;
+          if (lastHoveredObjectNameRef.current !== objectName) {
+            const bounds = getObjectScreenBounds(intersectedObject);
+            onHover({ name: objectName, bounds });
+            lastHoveredObjectNameRef.current = objectName;
+          }
           canvas.style.cursor = 'pointer';
         } else {
-          onHover(null);
+          if (lastHoveredObjectNameRef.current !== null) {
+            onHover(null);
+            lastHoveredObjectNameRef.current = null;
+          }
           canvas.style.cursor = 'default';
         }
       }
@@ -110,7 +146,7 @@ export default function WaitingRoomScene({ onHover, onMouseMove }) {
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.style.cursor = 'default';
     };
-  }, [camera, gl, onHover, onMouseMove]);
+  }, [camera, gl, onHover, onMouseMove, scene]); // scene dependency for clickablesRef
 
   // Animation loop for plants
   useFrame(({ clock }) => {

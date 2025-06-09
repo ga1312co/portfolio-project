@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { apiService } from '../services/api';
 import './HoverPopup.css';
 
-export default function HoverPopup({ hoveredObject, mousePosition }) {
+export default function HoverPopup({ hoveredObjectInfo }) {
   const [projects, setProjects] = useState([]);
   const [experiences, setExperiences] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,37 +34,48 @@ export default function HoverPopup({ hoveredObject, mousePosition }) {
 
   // Set popup position ONLY when it first appears
   useEffect(() => {
-    if (hoveredObject && mousePosition && !showPopup) {
+    if (hoveredObjectInfo && hoveredObjectInfo.bounds && !showPopup) {
       // Clear any hide timeout
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current);
       }
       
-      const offset = 0;
+      const { bounds } = hoveredObjectInfo;
       const popupWidth = 350;
-      const popupHeight = 400;
-      const headerHeight = 80; // Account for header height
-      const topMargin = 20; // Additional margin from top
-      
-      let left = mousePosition.x + offset;
-      let top = mousePosition.y - popupHeight / 2;
+      const popupHeight = 400; // Consider making this dynamic or a max-height
+      const headerHeight = 80; 
+      const topPageMargin = 20; // Renamed from topMargin for clarity
+      const offsetFromObject = 15; // Space between object and popup
 
-      if (left + popupWidth > window.innerWidth) {
-        left = mousePosition.x - popupWidth - offset;
+      // Default: position to the right of the object
+      let left = bounds.right + offsetFromObject;
+      // Vertically align middle of popup with middle of object bounds
+      let top = bounds.top + (bounds.height / 2) - (popupHeight / 2);
+
+      // If not enough space on the right, try the left
+      if (left + popupWidth > window.innerWidth - topPageMargin) {
+        left = bounds.left - popupWidth - offsetFromObject;
+      }
+
+      // Ensure it's not off-screen horizontally
+      if (left < topPageMargin) {
+        left = topPageMargin;
+      }
+      if (left + popupWidth > window.innerWidth - topPageMargin) {
+        left = window.innerWidth - popupWidth - topPageMargin;
       }
       
-      // Ensure popup doesn't go behind header
-      if (top < headerHeight + topMargin) {
-        top = headerHeight + topMargin;
+      // Ensure it's not off-screen vertically
+      if (top < headerHeight + topPageMargin) {
+        top = headerHeight + topPageMargin;
       }
-      
-      if (top + popupHeight > window.innerHeight - 20) {
-        top = window.innerHeight - popupHeight - 20;
+      if (top + popupHeight > window.innerHeight - topPageMargin) {
+        top = window.innerHeight - popupHeight - topPageMargin;
       }
 
       setPopupPosition({ left, top });
       setShowPopup(true);
-    } else if (!hoveredObject && !isHoveringPopup) {
+    } else if (!hoveredObjectInfo && !isHoveringPopup) {
       // Hide with delay
       hideTimeoutRef.current = setTimeout(() => {
         setShowPopup(false);
@@ -77,7 +88,7 @@ export default function HoverPopup({ hoveredObject, mousePosition }) {
         clearTimeout(hideTimeoutRef.current);
       }
     };
-  }, [hoveredObject, showPopup, isHoveringPopup]);
+  }, [hoveredObjectInfo, showPopup, isHoveringPopup]);
 
   // Handle popup hover to keep it visible
   const handlePopupMouseEnter = () => {
@@ -96,7 +107,8 @@ export default function HoverPopup({ hoveredObject, mousePosition }) {
   };
 
   const getPopupContent = (objectName) => {
-    const name = objectName?.toLowerCase() || '';
+    if (!objectName) return null;
+    const name = objectName.toLowerCase();
     
     if (name.includes('projects')) {
       return {
@@ -135,9 +147,9 @@ export default function HoverPopup({ hoveredObject, mousePosition }) {
     return null;
   };
 
-  if (!showPopup || !popupPosition || !hoveredObject) return null;
+  if (!showPopup || !popupPosition || !hoveredObjectInfo || !hoveredObjectInfo.name) return null;
 
-  const content = getPopupContent(hoveredObject);
+  const content = getPopupContent(hoveredObjectInfo.name);
   if (!content) return null;
 
   return (
