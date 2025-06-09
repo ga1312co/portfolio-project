@@ -2,7 +2,20 @@ import { prisma } from '../server.js';
 
 export const getAllExperiences = async (req, res) => {
   try {
-    const experiences = await prisma.experience.findMany();
+    const experiences = await prisma.experience.findMany({
+      include: {
+        images: {
+          select: {
+            id: true,
+            url: true,
+            caption: true,
+            projectId: true // om du vill ha det
+            // ⛔️ INTE experience: true eller experienceId: true här
+          }
+        }
+      }
+    });
+
     res.json(experiences);
   } catch (error) {
     console.error('Error fetching experiences:', error);
