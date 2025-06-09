@@ -1,14 +1,16 @@
-import { useGLTF } from '@react-three/drei';
+import { useGLTF, useTexture } from '@react-three/drei';
 import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function WaitingRoomScene({ onHover, onMouseMove }) {
+export default function WaitingRoomScene({ onHover, onMouseMove, hoveredProjectScreenshot }) {
   const { scene } = useGLTF('/models/WaitingRoom2.glb');
   const plantsRef = useRef([]);
   const clickablesRef = useRef([]);
   const { camera, gl } = useThree();
   const lastHoveredObjectNameRef = useRef(null);
+  const computerMeshRef = useRef(null);
+  const originalComputerTextureRef = useRef(null);
 
   useEffect(() => {
     plantsRef.current = [];
@@ -60,6 +62,15 @@ export default function WaitingRoomScene({ onHover, onMouseMove }) {
         if (isClickable) {
           clickablesRef.current.push(child);
           console.log('🖱️ Found clickable object:', child.name);
+        }
+
+        // Find the computer mesh (now using "clickable_projects")
+        if (child.name.toLowerCase().includes('clickable_projects')) {
+          computerMeshRef.current = child;
+          // Store the original texture only once
+          if (!originalComputerTextureRef.current && child.material && child.material.map) {
+            originalComputerTextureRef.current = child.material.map;
+          }
         }
       }
     });
@@ -172,6 +183,27 @@ export default function WaitingRoomScene({ onHover, onMouseMove }) {
       }
     });
   });
+
+  // Effect to update computer screen texture
+  useEffect(() => {
+    if (computerMeshRef.current) {
+      if (hoveredProjectScreenshot) {
+        // Load new texture and set it
+        const loader = new THREE.TextureLoader();
+        loader.load(hoveredProjectScreenshot, (texture) => {
+          texture.flipY = false; // Fix upside-down image
+          computerMeshRef.current.material.map = texture;
+          computerMeshRef.current.material.needsUpdate = true;
+        });
+      } else {
+        // Reset to original texture if available
+        if (originalComputerTextureRef.current) {
+          computerMeshRef.current.material.map = originalComputerTextureRef.current;
+          computerMeshRef.current.material.needsUpdate = true;
+        }
+      }
+    }
+  }, [hoveredProjectScreenshot]);
 
   return <primitive object={scene} scale={9} />;
 }

@@ -112,9 +112,15 @@ function ScrollCameraController() {
 
 export default function SceneCanvas() {
   const [hoveredObjectInfo, setHoveredObjectInfo] = useState(null);
+  const [hoveredProjectScreenshot, setHoveredProjectScreenshot] = useState(null);
 
-  const handleHover = (info) => { // info is { name, bounds } or null
+  const handleHover = (info) => {
     setHoveredObjectInfo(info);
+  };
+
+  // Called by HoverPopup when a project row is hovered
+  const handleProjectHover = (screenshotUrl) => {
+    setHoveredProjectScreenshot(screenshotUrl);
   };
 
   return (
@@ -166,15 +172,16 @@ export default function SceneCanvas() {
         
         <Suspense fallback={null}>
           <WaitingRoomScene 
-            onHover={handleHover} 
-            onMouseMove={() => {}} // Or a no-op if SceneCanvas doesn't need live mouse coords
+            onHover={handleHover}
+            onMouseMove={() => {}} 
+            hoveredProjectScreenshot={hoveredProjectScreenshot}
           />
         </Suspense>
         <ScrollCameraController />
       </Canvas>
-      
       <HoverPopup 
-        hoveredObjectInfo={hoveredObjectInfo} 
+        hoveredObjectInfo={hoveredObjectInfo}
+        onProjectHover={handleProjectHover}
       />
     </div>
   );

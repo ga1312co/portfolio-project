@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { apiService } from '../services/api';
 import './HoverPopup.css';
 
-export default function HoverPopup({ hoveredObjectInfo }) {
+export default function HoverPopup({ hoveredObjectInfo, onProjectHover }) {
   const [projects, setProjects] = useState([]);
   const [experiences, setExperiences] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -141,6 +141,19 @@ export default function HoverPopup({ hoveredObjectInfo }) {
     // The useEffect will now handle the hiding logic if hoveredObjectInfo is also null.
   };
 
+  // Handler for mouse enter/leave on project row
+  const handleProjectRowEnter = (project) => {
+    // Use the first image URL if available
+    const screenshotUrl =
+      Array.isArray(project.images) && project.images.length > 0
+        ? project.images[0].url
+        : null; // If no image, send null to reset
+    if (onProjectHover) onProjectHover(screenshotUrl);
+  };
+  const handleProjectRowLeave = () => {
+    if (onProjectHover) onProjectHover(null);
+  };
+
   const getPopupContent = (objectName) => {
     if (!objectName) return null;
     const name = objectName.toLowerCase();
@@ -148,7 +161,6 @@ export default function HoverPopup({ hoveredObjectInfo }) {
     if (name.includes('projects')) {
       return {
         title: 'PROJECTS',
-        description: 'Explore my latest projects including web applications, 3D visualizations, and full-stack development work.',
         projects: projects,
         type: 'projects'
       };
@@ -158,7 +170,6 @@ export default function HoverPopup({ hoveredObjectInfo }) {
       return {
         title: 'EXPERIENCE',
         subtitle: '', // Remove the count subtitle
-        description: 'My work experience and the projects I\'ve contributed to in my career.',
         experiences: experiences,
         type: 'experiences'
       };
@@ -167,13 +178,15 @@ export default function HoverPopup({ hoveredObjectInfo }) {
     if (name.includes('about')) {
       return {
         title: 'ABOUT THIS PAGE',
-        subtitle: 'How I Built This',
-        description: 'This page is built with React, Three.js, and CSS.',
+        description: 'This GUI is built with React, Three.js, Blender, and CSS.',
         details: [
-          'Created with React and Three.js',
-          'Responsive design for all devices',
-          'Interactive 3D elements and animations',
-          'Optimized for performance and accessibility'
+          '- UI Created with React and Three.js',
+          '- 3D Models from Blender',
+          '- API Integration with Node.js and Express',
+          '- Interactive 3D elements and animations',
+          '- Database-driven content management',
+          '- Database: Prisma with PostgreSQL',
+          '- Containerized with Docker'
         ],
         type: 'about'
       };
@@ -237,7 +250,12 @@ export default function HoverPopup({ hoveredObjectInfo }) {
                   }
 
                   return (
-                    <div key={project.id} className="list-item">
+                    <div
+                      key={project.id}
+                      className="list-item"
+                      onMouseEnter={() => handleProjectRowEnter(project)}
+                      onMouseLeave={handleProjectRowLeave}
+                    >
                       <div className="item-info">
                         <strong className="item-title">{project.title}</strong>
                         <span className="item-description">
@@ -256,8 +274,13 @@ export default function HoverPopup({ hoveredObjectInfo }) {
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="github-link"
+                            title="GitHub"
                           >
-                            🐱 GitHub
+                            <img
+                              src="/images/github_logo.png"
+                              alt="GitHub"
+                              style={{ width: 20, height: 20, verticalAlign: 'middle' }}
+                            />
                           </a>
                         </div>
                       )}
@@ -272,22 +295,59 @@ export default function HoverPopup({ hoveredObjectInfo }) {
           {content.type === 'experiences' && content.experiences && (
             <div className="popup-section">
               <div className="scrollable-content">
-                {content.experiences.map((experience) => (
-                  <div key={experience.id} className="list-item">
-                    <strong className="item-title">{experience.title}</strong>
-                    <span className="item-description">
-                      {experience.description && typeof experience.description === 'string' 
-                        ? experience.description.substring(0, 200) + '...' 
-                        : `${experience.startDate ? new Date(experience.startDate).getFullYear() : ''} - ${experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present'}`}
-                    </span>
-                  </div>
-                ))}
+                {content.experiences.map((experience) => {
+                  // Get first image if available
+                  const firstImage =
+                    Array.isArray(experience.images) && experience.images.length > 0
+                      ? experience.images[0].url
+                      : null;
+
+                  // Handle JSON description
+                  let header = '';
+                  let text = '';
+                  if (experience.description && typeof experience.description === 'object') {
+                    header = experience.description.header || '';
+                    text = experience.description.text || '';
+                  } else if (typeof experience.description === 'string') {
+                    text = experience.description;
+                  }
+
+                  // Format dates
+                  const startYear = experience.startDate ? new Date(experience.startDate).getFullYear() : '';
+                  const endYear = experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present';
+
+                  return (
+                    <div key={experience.id} className="list-item experience-item">
+                      <div className="experience-header">
+                        <strong className="item-title">{experience.title}</strong>
+                        {firstImage && (
+                          <img
+                            src={firstImage}
+                            alt={experience.title + ' screenshot'}
+                            className="experience-image"
+                          />
+                        )}
+                      </div>
+                      {header && (
+                        <span className="experience-header-text">{header}</span>
+                      )}
+                      <span className="experience-dates">
+                        {startYear}{startYear && endYear ? ' – ' : ''}{endYear}
+                      </span>
+                      {text && (
+                        <span className="item-description">
+                          {text.length > 400 ? text.substring(0, 200) + '...' : text}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
               
               {/* Resume link section */}
               <div className="popup-resume-section">
                 <a 
-                  href="https://docs.google.com/document/d/18bghuxj7JjOlo-jk5cEUtm8xnTemwvY_/edit?usp=sharing&ouid=100468930364114033021&rtpof=true&sd=true" 
+                  href="https://drive.google.com/file/d/1Wz76jZe_rYO4U02gY9HpvjIBqV09ma3j/view?usp=sharing" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="resume-link"
@@ -306,6 +366,22 @@ export default function HoverPopup({ hoveredObjectInfo }) {
                   {detail}
                 </div>
               ))}
+              <div style={{ marginTop: '16px', textAlign: 'center' }}>
+                <a
+                  href="https://github.com/ga1312co/portfolio-project"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="github-link"
+                  title="View source on GitHub"
+                  style={{ display: 'inline-block' }}
+                >
+                  <img
+                    src="/images/github_logo.png"
+                    alt="GitHub"
+                    style={{ width: 28, height: 28, verticalAlign: 'middle' }}
+                  />
+                </a>
+              </div>
             </div>
           )}
         </>

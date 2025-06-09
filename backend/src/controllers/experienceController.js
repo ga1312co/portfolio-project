@@ -9,8 +9,6 @@ export const getAllExperiences = async (req, res) => {
             id: true,
             url: true,
             caption: true,
-            projectId: true // om du vill ha det
-            // ⛔️ INTE experience: true eller experienceId: true här
           }
         }
       }
@@ -39,6 +37,28 @@ export const createExperience = async (req, res) => {
     res.status(201).json(newExperience);
   } catch (error) {
     console.error('Error creating experience:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const updateExperience = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, startDate, endDate } = req.body;
+
+  try {
+    const updatedExperience = await prisma.experience.update({
+      where: { id: parseInt(id) },
+      data: {
+        title,
+        description,
+        startDate: startDate ? new Date(startDate) : undefined,
+        endDate: endDate ? new Date(endDate) : undefined
+      }
+    });
+
+    res.json(updatedExperience);
+  } catch (error) {
+    console.error('Error updating experience:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

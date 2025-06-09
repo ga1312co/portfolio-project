@@ -184,6 +184,12 @@
   transform: translateY(-1px);
 }
 
+.github-link img {
+  display: block;
+  margin: 0 auto;
+  pointer-events: none;
+}
+
 /* Resume link section */
 .popup-resume-section {
   margin-top: 12px;
@@ -239,4 +245,46 @@
   .popup-description {
     font-size: 12px;
   }
+}
+
+/* Experience section styles */
+.experience-item {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.experience-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.experience-image {
+  width: 48px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 4px;
+  margin-left: 8px;
+  background: transparent;
+  border: none;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+
+.experience-header-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4152a4;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  display: block;
+}
+
+.experience-dates {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 2px;
+  display: block;
 }

@@ -112,7 +112,7 @@ body {
 
 .footer-content {
   text-align: center;
-  color: white;
+  color: rgb(0, 0, 0);
   max-width: 500px;
   padding: 2rem;
 }
@@ -144,15 +144,6 @@ body {
   margin-top: 1.5rem;
 }
 
-.social-links a {
-  color: white;
-  text-decoration: none;
-  font-size: 1.1rem;
-  padding: 0.6rem 1.2rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 25px;
-  transition: all 0.3s ease;
-}
 
 .social-links a:hover {
   background: rgba(255, 255, 255, 0.1);

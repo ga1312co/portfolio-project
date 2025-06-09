@@ -31,10 +31,10 @@ function App() {
           </div>
           <div className="social-links">
             <a href="https://github.com/ga1312co" target="_blank" rel="noopener noreferrer">
-              GitHub
+              <img src="/images/github_logo.png" alt="GitHub" style={{ width: 28, height: 28, verticalAlign: 'middle' }} />
             </a>
             <a href="https://www.linkedin.com/in/gabriel-c-705264a3/" target="_blank" rel="noopener noreferrer">
-              LinkedIn
+              <img src="/images/linkedin_logo.svg" alt="LinkedIn" style={{ width: 28, height: 28, verticalAlign: 'middle' }} />
             </a>
           </div>
         </div>
