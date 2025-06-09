@@ -6,10 +6,16 @@ export default function HoverPopup({ hoveredObjectInfo }) {
   const [projects, setProjects] = useState([]);
   const [experiences, setExperiences] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(false); // Controls DOM presence
   const [popupPosition, setPopupPosition] = useState(null);
   const [isHoveringPopup, setIsHoveringPopup] = useState(false);
-  const hideTimeoutRef = useRef(null);
+  const [isVisibleClass, setIsVisibleClass] = useState(false); // Controls CSS animation class
+  
+  const startHidingTimeoutRef = useRef(null); // For the "bridge" grace period
+  const domRemoveTimeoutRef = useRef(null);   // For removing from DOM after animation
+  const entryAnimationRequestId = useRef(null); // For entry animation sequencing (using rAF)
+  const [currentObjectNameForContent, setCurrentObjectNameForContent] = useState(null);
+
 
   // Fetch data when component mounts
   useEffect(() => {
@@ -32,78 +38,107 @@ export default function HoverPopup({ hoveredObjectInfo }) {
     fetchData();
   }, []);
 
-  // Set popup position ONLY when it first appears
+  // Popup visibility, positioning, and animation logic
   useEffect(() => {
-    if (hoveredObjectInfo && hoveredObjectInfo.bounds && !showPopup) {
-      // Clear any hide timeout
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current);
+    // Clear all potentially pending timeouts/animation frames at the start of each effect run
+    if (startHidingTimeoutRef.current) clearTimeout(startHidingTimeoutRef.current);
+    if (domRemoveTimeoutRef.current) clearTimeout(domRemoveTimeoutRef.current);
+    if (entryAnimationRequestId.current) cancelAnimationFrame(entryAnimationRequestId.current);
+
+    const isPopupReferencedByObject = hoveredObjectInfo && hoveredObjectInfo.bounds;
+    const shouldBeVisible = isPopupReferencedByObject || isHoveringPopup;
+
+    if (shouldBeVisible) {
+      if (isPopupReferencedByObject) {
+        // Update position and content name only if object is hovered
+        if (hoveredObjectInfo.name !== currentObjectNameForContent || !showPopup) {
+            setCurrentObjectNameForContent(hoveredObjectInfo.name);
+        }
+        const { bounds } = hoveredObjectInfo;
+        const popupWidth = 350;
+        const popupHeight = 400;
+        const headerHeight = 80;
+        const topPageMargin = 20;
+        const overlapAmount = 0; 
+
+        let left = bounds.right + overlapAmount;
+        let top = bounds.top + (bounds.height / 2) - (popupHeight / 2);
+
+        if (left + popupWidth > window.innerWidth - topPageMargin) {
+          left = bounds.left - popupWidth - overlapAmount;
+        }
+
+        if (left < topPageMargin) left = topPageMargin;
+        if (left + popupWidth > window.innerWidth - topPageMargin) {
+          left = window.innerWidth - popupWidth - topPageMargin;
+        }
+        if (top < headerHeight + topPageMargin) top = headerHeight + topPageMargin;
+        if (top + popupHeight > window.innerHeight - topPageMargin) {
+          top = window.innerHeight - popupHeight - topPageMargin;
+        }
+        setPopupPosition({ left, top });
       }
       
-      const { bounds } = hoveredObjectInfo;
-      const popupWidth = 350;
-      const popupHeight = 400; // Consider making this dynamic or a max-height
-      const headerHeight = 80; 
-      const topPageMargin = 20; // Renamed from topMargin for clarity
-      const offsetFromObject = 15; // Space between object and popup
+      // Handle becoming visible
+      if (!showPopup) { // If not in DOM, add it and animate in
+          setShowPopup(true);
+          setIsVisibleClass(false); // Prepare for animation
+          entryAnimationRequestId.current = requestAnimationFrame(() => {
+            setIsVisibleClass(true); // Animate in
+          });
+      } else if (!isVisibleClass) { // Already in DOM, but was hidden (e.g. mouse re-entered quickly)
+          setIsVisibleClass(true); // Make it visible (CSS transition will apply)
+      }
+      // If showPopup is true AND isVisibleClass is true, it's already stable and visible. No action needed for visibility.
 
-      // Default: position to the right of the object
-      let left = bounds.right + offsetFromObject;
-      // Vertically align middle of popup with middle of object bounds
-      let top = bounds.top + (bounds.height / 2) - (popupHeight / 2);
-
-      // If not enough space on the right, try the left
-      if (left + popupWidth > window.innerWidth - topPageMargin) {
-        left = bounds.left - popupWidth - offsetFromObject;
+    } else { // Neither 3D object nor popup is hovered: Start hiding procedure
+      if (showPopup && isVisibleClass) { // Only hide if it's currently shown and visible
+        startHidingTimeoutRef.current = setTimeout(() => {
+          setIsVisibleClass(false); // Start CSS exit animation
+          
+          domRemoveTimeoutRef.current = setTimeout(() => {
+            if (!hoveredObjectInfo && !isHoveringPopup) { 
+                setShowPopup(false);
+                setPopupPosition(null);
+                // setCurrentObjectNameForContent(null); // Optionally clear after fully hidden
+            }
+          }, 200); // This MUST match your CSS transition duration
+        }, 250); // Your current grace period for the "bridge".
+      } else if (showPopup && !isVisibleClass) {
+        // It's in the DOM but already animating out or hidden.
+        // If domRemoveTimeoutRef isn't already running (e.g., from a previous cycle),
+        // ensure it gets removed. This is a fallback.
+        if (!domRemoveTimeoutRef.current) { // Check if a removal is already scheduled
+            domRemoveTimeoutRef.current = setTimeout(() => {
+                if (!hoveredObjectInfo && !isHoveringPopup) {
+                    setShowPopup(false);
+                    setPopupPosition(null);
+                }
+            }, 200); // CSS transition duration
+        }
       }
-
-      // Ensure it's not off-screen horizontally
-      if (left < topPageMargin) {
-        left = topPageMargin;
-      }
-      if (left + popupWidth > window.innerWidth - topPageMargin) {
-        left = window.innerWidth - popupWidth - topPageMargin;
-      }
-      
-      // Ensure it's not off-screen vertically
-      if (top < headerHeight + topPageMargin) {
-        top = headerHeight + topPageMargin;
-      }
-      if (top + popupHeight > window.innerHeight - topPageMargin) {
-        top = window.innerHeight - popupHeight - topPageMargin;
-      }
-
-      setPopupPosition({ left, top });
-      setShowPopup(true);
-    } else if (!hoveredObjectInfo && !isHoveringPopup) {
-      // Hide with delay
-      hideTimeoutRef.current = setTimeout(() => {
-        setShowPopup(false);
-        setPopupPosition(null);
-      }, 300);
     }
 
     return () => {
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current);
-      }
+      if (startHidingTimeoutRef.current) clearTimeout(startHidingTimeoutRef.current);
+      if (domRemoveTimeoutRef.current) clearTimeout(domRemoveTimeoutRef.current);
+      if (entryAnimationRequestId.current) cancelAnimationFrame(entryAnimationRequestId.current);
     };
-  }, [hoveredObjectInfo, showPopup, isHoveringPopup]);
+  // Primary drivers for visibility logic.
+  // currentObjectNameForContent is for content, showPopup is managed internally by this effect.
+  }, [hoveredObjectInfo, isHoveringPopup]); 
 
-  // Handle popup hover to keep it visible
   const handlePopupMouseEnter = () => {
-    if (hideTimeoutRef.current) {
-      clearTimeout(hideTimeoutRef.current);
-    }
+    if (startHidingTimeoutRef.current) clearTimeout(startHidingTimeoutRef.current);
+    if (domRemoveTimeoutRef.current) clearTimeout(domRemoveTimeoutRef.current);
+    
     setIsHoveringPopup(true);
+    // The useEffect will handle making it visible if it was in the process of hiding.
   };
 
   const handlePopupMouseLeave = () => {
     setIsHoveringPopup(false);
-    hideTimeoutRef.current = setTimeout(() => {
-      setShowPopup(false);
-      setPopupPosition(null);
-    }, 300);
+    // The useEffect will now handle the hiding logic if hoveredObjectInfo is also null.
   };
 
   const getPopupContent = (objectName) => {
@@ -146,126 +181,130 @@ export default function HoverPopup({ hoveredObjectInfo }) {
     
     return null;
   };
+  
+  // Use the state variable for content to prevent it from disappearing during exit animation
+  const content = getPopupContent(currentObjectNameForContent);
 
-  if (!showPopup || !popupPosition || !hoveredObjectInfo || !hoveredObjectInfo.name) return null;
-
-  const content = getPopupContent(hoveredObjectInfo.name);
-  if (!content) return null;
+  if (!showPopup || !popupPosition) return null; 
 
   return (
     <div 
-      className="hover-popup"
+      className={`hover-popup ${isVisibleClass ? 'visible' : ''}`}
       style={{
         position: 'fixed',
         left: `${popupPosition.left}px`,
         top: `${popupPosition.top}px`,
+        pointerEvents: isVisibleClass ? 'auto' : 'none', 
       }}
       onMouseEnter={handlePopupMouseEnter}
       onMouseLeave={handlePopupMouseLeave}
     >
-      <div className="popup-header">
-        <h3 className="popup-title">{content.title}</h3>
-        {/* Only show subtitle if it exists and isn't empty */}
-        {content.subtitle && (
-          <p className="popup-subtitle">
-            {loading ? 'Loading...' : content.subtitle}
-          </p>
-        )}
-      </div>
-
-      {content.description && (
-        <p className="popup-description">{content.description}</p>
-      )}
-
-      {/* Projects - simplified */}
-      {content.type === 'projects' && content.projects && (
-        <div className="popup-section">
-          <div className="scrollable-content">
-            {content.projects.map((project) => {
-              // Handle JSON description
-              let projectSummary = 'No description available';
-              let projectTech = [];
-              let githubLink = null;
-              
-              if (project.description && typeof project.description === 'object') {
-                projectSummary = project.description.summary || 'No summary available';
-                projectTech = project.description.tech || [];
-                githubLink = project.description.GitHubLink || project.description.githubLink;
-              } else if (project.description && typeof project.description === 'string') {
-                projectSummary = project.description.substring(0, 120) + '...';
-              }
-
-              return (
-                <div key={project.id} className="list-item">
-                  <strong className="item-title">{project.title}</strong>
-                  <span className="item-description">
-                    {projectSummary.length > 120 ? projectSummary.substring(0, 100) + '... Open page to see more' : projectSummary}
-                  </span>
-                  {projectTech.length > 0 && (
-                    <div className="item-tech">
-                      <small>Tech: {projectTech.join(', ')}</small>
-                    </div>
-                  )}
-                  {githubLink && (
-                    <div className="item-github">
-                      <a 
-                        href={githubLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="github-link"
-                      >
-                        🐱 GitHub
-                      </a>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+      {/* Render content only if available */}
+      {content ? (
+        <>
+          <div className="popup-header">
+            <h3 className="popup-title">{content.title}</h3>
+            {content.subtitle && (
+              <p className="popup-subtitle">
+                {loading ? 'Loading...' : content.subtitle}
+              </p>
+            )}
           </div>
-        </div>
-      )}
 
-      {/* Experiences - simplified */}
-      {content.type === 'experiences' && content.experiences && (
-        <div className="popup-section">
-          <div className="scrollable-content">
-            {content.experiences.map((experience) => (
-              <div key={experience.id} className="list-item">
-                <strong className="item-title">{experience.title}</strong>
-                <span className="item-description">
-                  {experience.description && typeof experience.description === 'string' 
-                    ? experience.description.substring(0, 200) + '...' 
-                    : `${experience.startDate ? new Date(experience.startDate).getFullYear() : ''} - ${experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present'}`}
-                </span>
+          {content.description && (
+            <p className="popup-description">{content.description}</p>
+          )}
+
+          {/* Projects - simplified */}
+          {content.type === 'projects' && content.projects && (
+            <div className="popup-section">
+              <div className="scrollable-content">
+                {content.projects.map((project) => {
+                  // Handle JSON description
+                  let projectSummary = 'No description available';
+                  let projectTech = [];
+                  let githubLink = null;
+                  
+                  if (project.description && typeof project.description === 'object') {
+                    projectSummary = project.description.summary || 'No summary available';
+                    projectTech = project.description.tech || [];
+                    githubLink = project.description.GitHubLink || project.description.githubLink;
+                  } else if (project.description && typeof project.description === 'string') {
+                    projectSummary = project.description.substring(0, 120) + '...';
+                  }
+
+                  return (
+                    <div key={project.id} className="list-item">
+                      <strong className="item-title">{project.title}</strong>
+                      <span className="item-description">
+                        {projectSummary.length > 120 ? projectSummary.substring(0, 100) + '... Open page to see more' : projectSummary}
+                      </span>
+                      {projectTech.length > 0 && (
+                        <div className="item-tech">
+                          <small>Tech: {projectTech.join(', ')}</small>
+                        </div>
+                      )}
+                      {githubLink && (
+                        <div className="item-github">
+                          <a 
+                            href={githubLink} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="github-link"
+                          >
+                            🐱 GitHub
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-          
-          {/* Resume link section */}
-          <div className="popup-resume-section">
-            <a 
-              href="https://docs.google.com/document/d/18bghuxj7JjOlo-jk5cEUtm8xnTemwvY_/edit?usp=sharing&ouid=100468930364114033021&rtpof=true&sd=true" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="resume-link"
-            >
-              📄 View Full Resume
-            </a>
-          </div>
-        </div>
-      )}
-
-      {/* About details */}
-      {content.type === 'about' && content.details && (
-        <div className="popup-section">
-          {content.details.map((detail, index) => (
-            <div key={index} className="detail-item">
-              {detail}
             </div>
-          ))}
-        </div>
-      )}
+          )}
 
+          {/* Experiences - simplified */}
+          {content.type === 'experiences' && content.experiences && (
+            <div className="popup-section">
+              <div className="scrollable-content">
+                {content.experiences.map((experience) => (
+                  <div key={experience.id} className="list-item">
+                    <strong className="item-title">{experience.title}</strong>
+                    <span className="item-description">
+                      {experience.description && typeof experience.description === 'string' 
+                        ? experience.description.substring(0, 200) + '...' 
+                        : `${experience.startDate ? new Date(experience.startDate).getFullYear() : ''} - ${experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present'}`}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Resume link section */}
+              <div className="popup-resume-section">
+                <a 
+                  href="https://docs.google.com/document/d/18bghuxj7JjOlo-jk5cEUtm8xnTemwvY_/edit?usp=sharing&ouid=100468930364114033021&rtpof=true&sd=true" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="resume-link"
+                >
+                  📄 View Full Resume
+                </a>
+              </div>
+            </div>
+          )}
+
+          {/* About details */}
+          {content.type === 'about' && content.details && (
+            <div className="popup-section">
+              {content.details.map((detail, index) => (
+                <div key={index} className="detail-item">
+                  {detail}
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      ) : null}
     </div>
   );
 }
