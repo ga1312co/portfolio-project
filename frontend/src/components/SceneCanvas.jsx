@@ -63,8 +63,8 @@ function ScrollCameraController() {
       name: "Position 1: Wide Overview"
     },
     {
-      position: new THREE.Vector3(-1.2, 3.1, -4.5),
-      lookAt: new THREE.Vector3(0, 3, 0),
+      position: new THREE.Vector3(-1.1, 3.1, -4),
+      lookAt: new THREE.Vector3(0, 3, -1),
       name: "Position 2: Projects View"
     },
     {
