@@ -133,7 +133,7 @@ export default function SceneCanvas() {
         shadows={{ type: "VSMShadowMap" }}
         style={{ width: '100%', height: '100%' }}
       >
-        {/* First directional light with higher resolution shadows */}
+        {/* First directional light */}
         <directionalLight 
           position={[1, 15, 1]} 
           intensity={0.5}
@@ -150,7 +150,7 @@ export default function SceneCanvas() {
           shadow-normalBias={0.05}
         />
 
-        {/* Second directional light with higher resolution shadows */}
+        {/* Second directional light */}
         <directionalLight 
           position={[-10, 15, -8]} 
           intensity={0.6}

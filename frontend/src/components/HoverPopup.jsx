@@ -186,7 +186,8 @@ export default function HoverPopup({ hoveredObjectInfo, onProjectHover }) {
           '- Interactive 3D elements and animations',
           '- Database-driven content management',
           '- Database: Prisma with PostgreSQL',
-          '- Containerized with Docker'
+          '- Containerized with Docker',
+          '- Fun project to test building with 3D elements and React!',
         ],
         type: 'about'
       };
