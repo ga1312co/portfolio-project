@@ -8,5 +8,6 @@ TO - DO
 1. DOCKER & PostgreSQL ✅✅✅
 3. Backend-API in Node.js/Express ✅✅✅
 4. Build React frontend ✅✅✅
-5. Authentication
-6. Deployment
+5. Admin panel
+6. Authentication 
+7. Deployment & CI/CD Pipelines
