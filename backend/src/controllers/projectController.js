@@ -47,3 +47,25 @@ export const createProject = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const updateProject = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, order } = req.body;
+
+  try {
+    const updatedProject = await prisma.project.update({
+      where: { id: parseInt(id) },
+      data: {
+        title,
+        description,
+        order
+      }
+    });
+
+    res.json(updatedProject);
+  } catch (error) {
+    console.error('Error updating project:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+  
+};
