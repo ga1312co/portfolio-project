@@ -4,21 +4,21 @@ import './styles/App.css';
 function App() {
   return (
     <div className="app-container">
-      {/* Navigation Header */}
+      {/* Navigation Header - Empty for now... Maybe add nav buttons to the different sections? */}
       <header className="header">
         <nav className="nav">
           <div className="nav-brand">
-            <h1>Gabriels Portfolio</h1>
+            <h1>Gabriel's Portfolio</h1>
           </div>
         </nav>
       </header>
       
-      {/* 3D Scene Section - takes up specific height */}
+      {/* 3D Scene Section */}
       <section className="scene-section" id="home">
         <SceneCanvas />
       </section>
       
-      {/* Footer Section - appears below the scene */}
+      {/* Footer Section */}
       <footer className="footer">
         <div className="footer-content">
           <h2>Contact</h2>
