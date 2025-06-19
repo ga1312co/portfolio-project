@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { apiService } from '../services/api';
-import './HoverPopup.css';
+import '../styles/HoverPopup.css';
 
 export default function HoverPopup({ hoveredObjectInfo, onProjectHover }) {
   const [projects, setProjects] = useState([]);

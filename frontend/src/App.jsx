@@ -1,5 +1,5 @@
 import SceneCanvas from './components/SceneCanvas';
-import './App.css';
+import './styles/App.css';
 
 function App() {
   return (
@@ -8,11 +8,8 @@ function App() {
       <header className="header">
         <nav className="nav">
           <div className="nav-brand">
-            <h1>Gabriels Portfölj</h1>
+            <h1>Gabriels Portfolio</h1>
           </div>
-          <ul className="nav-links">
-            <li><a href="#home">Home</a></li>
-          </ul>
         </nav>
       </header>
       
