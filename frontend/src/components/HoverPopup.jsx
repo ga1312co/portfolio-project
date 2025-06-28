@@ -199,16 +199,22 @@ export default function HoverPopup({ hoveredObjectInfo, onProjectHover }) {
   function buildAboutContent() {
     return {
       title: 'ABOUT THIS PAGE',
-      description: 'This GUI is built with React, Three.js, Blender, and CSS.',
       details: [
         '- UI Created with React and Three.js',
         '- 3D Models from Blender',
         '- API Integration with Node.js and Express',
-        '- Interactive 3D elements and animations',
-        '- Database-driven content management',
-        '- Database: Prisma with PostgreSQL',
+        '- Database(Postgre & Prisma)-driven content management',
         '- Containerized with Docker',
-        '- Fun project to test building with 3D elements and React!',
+        ' ',
+        'FIRST DEPLOYMENT IN AWS:',
+        'Frontend: hosted on S3 with CloudFront as CDN', 
+        'Backend: Docker container on ECS Fargate behind an Application Load Balancer.', 
+        'PostgreSQL database on AWS RDS.',
+        'Did this to learn AWS services - but expensive to run 💸💸💸',
+        ' ',
+        'SECOND DEPLOYMENT IN NETLIFY:',
+        'Hosted on Netlify with automatic deploys from GitHub',
+        'EASY TO MAINTAIN AND FREE TO HOST 😎😎',
       ],
       type: 'about'
     };
