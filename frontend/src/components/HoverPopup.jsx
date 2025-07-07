@@ -212,9 +212,11 @@ export default function HoverPopup({ hoveredObjectInfo, onProjectHover }) {
         'PostgreSQL database on AWS RDS.',
         'Did this to learn AWS services - but expensive to run 💸💸💸',
         ' ',
-        'SECOND DEPLOYMENT IN NETLIFY:',
-        'Hosted on Netlify with automatic deploys from GitHub',
-        'EASY TO MAINTAIN AND FREE TO HOST 😎😎',
+        'SECOND DEPLOYMENT IN RENDER:',
+        'Hosted on RENDER with a docker container for the backend and static files for the frontend.',
+        'PostgreSQL database on RENDER.',
+        'Frontend deploys on every push to main branch.',
+        'EASY TO MAINTAIN AND CHEAP TO HOST 😎😎',
       ],
       type: 'about'
     };

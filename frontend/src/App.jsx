@@ -1,23 +1,61 @@
+import { useState, useEffect } from 'react';
 import SceneCanvas from './components/SceneCanvas';
+import LoadingScreen from './components/LoadingScreen';
+import { apiService } from './services/api';
 import './styles/App.css';
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isReady, setIsReady] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
+  const [dataReady, setDataReady] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    async function checkInitialData() {
+      try {
+        // Fetch initial data from the API
+        await apiService.getProjects();
+        await apiService.getExperiences();
+        setDataReady(true);
+      } catch (error) {
+        console.error("API not ready yet", error);
+        // Retry after a short delay
+        setTimeout(checkInitialData, 1000);
+      }
+    }
+    checkInitialData();
+  }, []);
+
+  useEffect(() => {
+    if (sceneReady && dataReady) {
+      // Small delay to ensure everything is properly loaded
+      setTimeout(() => setIsReady(true), 500);
+    }
+  }, [sceneReady, dataReady]);
+
+  const handleEnter = () => {
+    setIsTransitioning(true);
+    setTimeout(() => setIsLoading(false), 800);
+  };
+
   return (
     <div className="app-container">
-      {/* Navigation Header - Empty for now... Maybe add nav buttons to the different sections? */}
-      <header className="header">
-        <nav className="nav">
-          <div className="nav-brand">
-            <h1>Gabriel's Portfolio</h1>
-          </div>
-        </nav>
-      </header>
-      
+      {isLoading && (
+        <LoadingScreen
+          isReady={isReady}
+          onEnter={handleEnter}
+          transitioning={isTransitioning}
+        />
+      )}
+
       {/* 3D Scene Section */}
-      <section className="scene-section" id="home">
-        <SceneCanvas />
+      <section
+        className={`scene-section${isTransitioning ? ' scene-fade-in' : ''}`}
+        id="home"
+      >
+        <SceneCanvas onSceneReady={() => setSceneReady(true)} />
       </section>
-      
       {/* Footer Section */}
       <footer className="footer">
         <div className="footer-content">

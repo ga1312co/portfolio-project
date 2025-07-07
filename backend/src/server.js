@@ -9,7 +9,8 @@ import imageRoutes from './routes/imageRoutes.js';
 import experienceRoutes from './routes/experienceRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 
-dotenv.config();
+const envFile = `.env.${process.env.NODE_ENV || 'dev'}`;
+dotenv.config({ path: envFile });
 
 // Initialize express app
 const app = express();
