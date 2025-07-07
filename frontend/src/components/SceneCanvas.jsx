@@ -112,7 +112,7 @@ function ScrollCameraController() {
   return null;
 }
 
-export default function SceneCanvas() {
+export default function SceneCanvas({ onSceneReady }) {
   const [hoveredObjectInfo, setHoveredObjectInfo] = useState(null);
   const [hoveredProjectScreenshot, setHoveredProjectScreenshot] = useState(null);
 
@@ -177,6 +177,7 @@ export default function SceneCanvas() {
             onHover={handleHover}
             onMouseMove={() => {}} 
             hoveredProjectScreenshot={hoveredProjectScreenshot}
+            onReady={onSceneReady}
           />
         </Suspense>
         <ScrollCameraController />

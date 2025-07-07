@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function WaitingRoomScene({ onHover, onMouseMove, hoveredProjectScreenshot }) {
+export default function WaitingRoomScene({ onHover, onMouseMove, hoveredProjectScreenshot, onReady }) {
   const { scene } = useGLTF('/models/WaitingRoom2.glb');
   const plantsRef = useRef([]);
   const clickablesRef = useRef([]);
@@ -15,7 +15,11 @@ export default function WaitingRoomScene({ onHover, onMouseMove, hoveredProjectS
   // --- Scene Setup ---
   useEffect(() => {
     initializeSceneObjects();
-  }, [scene]);
+    // Signal that scene is ready
+    if (onReady) {
+      onReady();
+    }
+  }, [scene, onReady]);
 
   function initializeSceneObjects() {
     plantsRef.current = [];
