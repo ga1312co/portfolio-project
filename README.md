@@ -2,7 +2,7 @@
 
 ## https://www.gabrielcolt.com/
 
-##TECH STACK
+**TECH STACK**
 
 *Database - PostgreSQL 🤠 \ Deployment - Docker & RENDER 😈\ Backend - Node.js 💀\ Frontend - React, Three.js 🐗*
 
