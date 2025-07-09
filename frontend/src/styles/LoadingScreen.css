@@ -12,18 +12,45 @@
   transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1);
 }
 
-.loading-title {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #667eea;
-  margin-bottom: 100px;
-}
-
 .loading-content {
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.text-container h1, .text-container h2, .text-container h3 {
+  color: #333;
+  opacity: 0;
+}
+
+.text-container h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.text-container h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.text-container h3 {
+  font-size: 1.5rem;
+  font-style: italic;
+  margin-bottom: 2rem;
+}
+
+.fade-in-1 {
+  animation: fadeIn 1s forwards;
+}
+
+.fade-in-2 {
+  animation: fadeIn 1s forwards 1s;
+}
+
+.fade-in-3 {
+  animation: fadeIn 1s forwards 2s;
 }
 
 .loading-image-glow {
@@ -81,58 +108,42 @@
 .loading-bar {
   width: 0%;
   height: 100%;
-  background: linear-gradient(90deg, #a1abdb, #667eea);
+  background-color: #051F20;
   border-radius: 4px;
-  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: loading-indeterminate 2s infinite linear;
-}
-
-.loading-bar.ready {
-  width: 100%;
-  animation: none;
-}
-
-@keyframes loading-indeterminate {
-  0% {
-    width: 0%;
-  }
-  50% {
-    width: 50%;
-  }
-  100% {
-    width: 100%;
-  }
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .enter-button {
   padding: 10px 25px;
   font-size: 16px;
   font-weight: 600;
-  color: white;
-  background-color: #667eea;
-  border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s, opacity 0.3s, transform 0.3s;
+  transition: background-color 0.3s, color 0.3s, opacity 0.3s, transform 0.3s;
   opacity: 0;
   transform: translateY(10px);
+  border: 1px solid #051F20;
 }
 
 .enter-button:disabled {
-  background-color: #a9b1f4;
+  color: white;
+  background-color: #051F20;
   cursor: not-allowed;
   opacity: 1;
   transform: translateY(0);
 }
 
 .enter-button:not(:disabled) {
+  color: #051F20;
+  background-color: transparent;
   opacity: 1;
   transform: translateY(0);
   animation: fadeIn 0.5s forwards;
 }
 
 .enter-button:not(:disabled):hover {
-  background-color: #5a67d8;
+  color: white;
+  background-color: #051F20;
 }
 
 @keyframes fadeIn {
@@ -160,11 +171,6 @@
 
 .scene-fade-in > div {
   animation: fadeInScene 1s both;
-}
-
-@keyframes fadeInScene {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 @keyframes fadeInScene {
