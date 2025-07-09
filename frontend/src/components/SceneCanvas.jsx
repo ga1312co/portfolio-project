@@ -4,8 +4,9 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import WaitingRoomScene from './WaitingRoomScene';
 import HoverPopup from './HoverPopup';
+import CameraViewportOffset from './CameraViewportOffset';
 
-function ScrollCameraController() {
+function ScrollCameraController({ onScrollUpdate }) { // Accept prop here
   const { camera } = useThree();
   const scrollRef = useRef(0);
 
@@ -34,28 +35,19 @@ function ScrollCameraController() {
     const sectionScrollStart = sectionTop;
     const sectionScrollEnd = sectionTop + sectionHeight - window.innerHeight;
 
+    let sectionProgress = 0;
     if (scrollY >= sectionScrollStart && scrollY <= sectionScrollEnd) {
-      const sectionProgress = (scrollY - sectionScrollStart) / (sectionScrollEnd - sectionScrollStart);
-      scrollRef.current = Math.min(Math.max(sectionProgress, 0), 1);
-    } else if (scrollY < sectionScrollStart) {
-      scrollRef.current = 0;
-    } else {
-      scrollRef.current = 1;
+      sectionProgress = (scrollY - sectionScrollStart) / (sectionScrollEnd - sectionScrollStart);
+    } else if (scrollY > sectionScrollEnd) {
+      sectionProgress = 1;
     }
+
+    scrollRef.current = Math.min(Math.max(sectionProgress, 0), 1);
+    onScrollUpdate(scrollRef.current); // Call onScrollUpdate here where scroll is updated
   }
 
   function easeInOutCubic(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  }
-
-  function easeInOutQuart(t) {
-    return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
-  }
-
-  function easeOutBack(t) {
-    const c1 = 1.70158;
-    const c3 = c1 + 1;
-    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
   }
 
   const cameraSetup = getCameraSetups();
@@ -115,12 +107,12 @@ function ScrollCameraController() {
 export default function SceneCanvas({ onSceneReady }) {
   const [hoveredObjectInfo, setHoveredObjectInfo] = useState(null);
   const [hoveredProjectScreenshot, setHoveredProjectScreenshot] = useState(null);
+  const [scrollProgress, setScrollProgress] = useState(0); // State is here
 
   const handleHover = (info) => {
     setHoveredObjectInfo(info);
   };
 
-  // Called by HoverPopup when a project row is hovered
   const handleProjectHover = (screenshotUrl) => {
     setHoveredProjectScreenshot(screenshotUrl);
   };
@@ -135,7 +127,6 @@ export default function SceneCanvas({ onSceneReady }) {
         shadows={{ type: "VSMShadowMap" }}
         style={{ width: '100%', height: '100%' }}
       >
-        {/* First directional light */}
         <directionalLight 
           position={[1, 15, 1]} 
           intensity={0.5}
@@ -151,8 +142,6 @@ export default function SceneCanvas({ onSceneReady }) {
           shadow-bias={-0.0005}
           shadow-normalBias={0.05}
         />
-
-        {/* Second directional light */}
         <directionalLight 
           position={[-10, 15, -8]} 
           intensity={0.6}
@@ -168,8 +157,6 @@ export default function SceneCanvas({ onSceneReady }) {
           shadow-bias={-0.001}
           shadow-normalBias={0.1}
         />
-
-        {/* Soft ambient light */}
         <ambientLight intensity={0.6} />
         
         <Suspense fallback={null}>
@@ -180,7 +167,9 @@ export default function SceneCanvas({ onSceneReady }) {
             onReady={onSceneReady}
           />
         </Suspense>
-        <ScrollCameraController />
+        {/* Pass props correctly here */}
+        <ScrollCameraController onScrollUpdate={setScrollProgress} />
+        <CameraViewportOffset scrollProgress={scrollProgress} />
       </Canvas>
       <HoverPopup 
         hoveredObjectInfo={hoveredObjectInfo}

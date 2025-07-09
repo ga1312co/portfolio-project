@@ -46,6 +46,8 @@ function App() {
           isReady={isReady}
           onEnter={handleEnter}
           transitioning={isTransitioning}
+          sceneReady={sceneReady}
+          dataReady={dataReady}
         />
       )}
 
