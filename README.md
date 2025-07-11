@@ -9,8 +9,11 @@
 **BRANCHES**
 
 **main** - Production branch, automatic deploy on commit
-**deployment_AWS_notActive** - First production branch, set up for deployment on AWS using AWS Fargate
-**deployment_Render_Backend_notActive** - Second production branch, deployment on Render using a PSQL backend
+
+**deployment_AWS_notActive** - 1st production branch, set up for deployment on AWS using AWS Fargate
+
+**deployment_Render_Backend_notActive** - 2nd production branch, deployment on Render using a PSQL backend
+
 **dev_gabriel_1** - Development branch, used for development on the last, static site for 💰💰💰 reasons
 
 **TO - DO**
