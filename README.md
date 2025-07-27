@@ -14,7 +14,7 @@
 
 **deployment_Render_Backend_notActive** - 2nd production branch, deployment on Render using a PSQL backend
 
-**dev_gabriel_1** - Development branch, used for development on the last, static site for 💰💰💰 reasons
+**dev_gabriel_staticPage** - Development branch, used for development on the last, static site for 💰💰💰 reasons
 
 **TO - DO** ✏️✏️✏️
 1. DOCKER & PostgreSQL ✅✅✅
@@ -23,5 +23,5 @@
 5. Deployment in AWS ✅✅✅ (EXPENSIVE - MOVED TO RENDER AFTER COMPLETING IT
 
 **MIGHT - DO** 🤔🤔🤔
-1. Admin Panel (CMS) with authentication
+1. Admin Panel (CMS) with authentication (Would have to reactivate the backend, probably won't)
 2. Automating tests for CI/CD
