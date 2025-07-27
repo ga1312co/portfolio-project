@@ -1,0 +1,30 @@
+[
+  {
+    "id": 3,
+    "title": "Fiskeboden – C#",
+    "description": "{\"role\": \"Software architecture, data modeling, and backend development\", \"tech\": [\"C#\", \"MS SQL\"], \"summary\": \"Built a full-stack project using .NET and C# with a MAUI application, REST clients, and a virtual machine hosted in Azure.\", \"GitHubLink\": \"https://github.com/ga1312co/CSharp-Fiskeboden-SchoolProject\"}",
+    "order": null,
+    "images": [{"id": 5, "url": "/images/MAUI_Screenshot3.png", "caption": "Screenshot of MAUI Application"}]
+  },
+  {
+    "id": 2,
+    "title": "Fiskeboden – JavaEE",
+    "description": "{\"role\": \"Software architecture, data modeling, and backend development\", \"tech\": [\"JavaEE\", \"Wildfly\", \"MS SQL\"], \"summary\": \"Built a full-stack project in JavaEE using EJB, JSP, JPA, and a REST client written in HTML.\", \"GitHubLink\": \"https://github.com/ga1312co/JavaEE-Fiskeboden-SchoolProject\"}",
+    "order": null,
+    "images": [{"id": 4, "url": "/images/JAVAEE_Screenshot2.png", "caption": "Screenshot of JavaEE Application"}]
+  },
+  {
+    "id": 4,
+    "title": "Victorias Verkstad – HTML/CSS/JS",
+    "description": "{\"role\": \"Design and frontend development\", \"tech\": [\"HTML\", \"CSS\", \"JavaScript\"], \"summary\": \"Created a static website as part of an interaction design report in the Interaction Design course.\", \"GitHubLink\": \"https://github.com/ga1312co/Victorias-Verkstad\"}",
+    "order": null,
+    "images": [{"id": 6, "url": "/images/HTML_Screenshot4.png", "caption": "Screenshot of HTML Web Page"}]
+  },
+  {
+    "id": 5,
+    "title": "ArcticByte - Databasintroduktion",
+    "description": "{\"role\": \"Full-stack development\", \"tech\": [\"Java\", \"SQL\"], \"summary\": \"Project planner – introduction to the Java DAO pattern\", \"GitHubLink\": \"https://github.com/ga1312co/arcticByte-project\"}",
+    "order": 5,
+    "images": [{"id": 7, "url": "/images/JavaDB_Screenshot5.png", "caption": "Screenshot of JavaFX Page"}]
+  }
+]

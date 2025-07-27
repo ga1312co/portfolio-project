@@ -1,0 +1,26 @@
+[
+  {
+    "id": 2,
+    "title": "Squad Leader - Swedish Armed Forces",
+    "description": "{\"text\": \"Served during the conscript year and first months as a professional soldier as deputy combat squad leader. Was later promoted to squad leader position on operational readiness units. UN MINUSMA deployment in Mali in 2022. Served the final year in a close protection unit.\"}",
+    "startDate": "2018-09-01T00:00:00.000Z",
+    "endDate": "2025-03-01T00:00:00.000Z",
+    "images": [{"id": 3, "url": "/images/forsvarsmakten_logo.png", "caption": "SAF"}]
+  },
+  {
+    "id": 3,
+    "title": "Senior Cabin Crew - SAS",
+    "description": "{\"text\": \"Initially worked on the short haul flights - with Europe - and after a year was promoted to Senior Cabin Crew. Occasionally cabin manager och short haul flights, regular steward on long haul flights.\"}",
+    "startDate": "2016-07-01T00:00:00.000Z",
+    "endDate": "2018-05-01T00:00:00.000Z",
+    "images": [{"id": 2, "url": "/images/sas_logo.png", "caption": "SAS"}]
+  },
+  {
+    "id": 1,
+    "title": "Skyddsvakt (Armed Security) - Cubsec",
+    "description": "{\"text\": \"Part time work in combination with univiersity studies. Close protection assignment on behalf of the Swedish Police Authority.\"}",
+    "startDate": "2025-03-01T00:00:00.000Z",
+    "endDate": null,
+    "images": [{"id": 1, "url": "/images/cubsec_logo.png", "caption": "Cubsec"}]
+  }
+]
