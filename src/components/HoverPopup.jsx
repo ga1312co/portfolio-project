@@ -239,7 +239,7 @@ export default function HoverPopup({ hoveredObjectInfo, onProjectHover }) {
                 <div className="item-info">
                   <strong className="item-title">{project.title}</strong>
                   <span className="item-description">
-                    {projectSummary.length > 120 ? projectSummary.substring(0, 100) + '... Open page to see more' : projectSummary}
+                    {projectSummary}
                   </span>
                   {projectTech.length > 0 && (
                     <div className="item-tech">
@@ -277,12 +277,23 @@ export default function HoverPopup({ hoveredObjectInfo, onProjectHover }) {
     let projectTech = [];
     let githubLink = null;
 
-    if (project.description && typeof project.description === 'object') {
-      projectSummary = project.description.summary || 'No summary available';
-      projectTech = project.description.tech || [];
-      githubLink = project.description.GitHubLink || project.description.githubLink;
-    } else if (project.description && typeof project.description === 'string') {
-      projectSummary = project.description.substring(0, 120) + '...';
+    let descriptionData = project.description;
+    if (typeof descriptionData === 'string') {
+      try {
+        descriptionData = JSON.parse(descriptionData);
+      } catch (e) {
+        // If parsing fails, treat it as a plain string
+        projectSummary = descriptionData;
+        descriptionData = null; // Prevent further object processing
+      }
+    }
+
+    if (descriptionData && typeof descriptionData === 'object') {
+      projectSummary = descriptionData.summary || 'No summary available';
+      projectTech = descriptionData.tech || [];
+      githubLink = descriptionData.GitHubLink || descriptionData.githubLink;
+    } else if (typeof project.description === 'string') {
+      projectSummary = project.description;
     }
     return { projectSummary, projectTech, githubLink };
   }
@@ -313,7 +324,7 @@ export default function HoverPopup({ hoveredObjectInfo, onProjectHover }) {
                 </span>
                 {text && (
                   <span className="item-description">
-                    {text.length > 400 ? text.substring(0, 200) + '...' : text}
+                    {text}
                   </span>
                 )}
               </div>
@@ -342,9 +353,21 @@ export default function HoverPopup({ hoveredObjectInfo, onProjectHover }) {
 
     let header = '';
     let text = '';
-    if (experience.description && typeof experience.description === 'object') {
-      header = experience.description.header || '';
-      text = experience.description.text || '';
+
+    let descriptionData = experience.description;
+    if (typeof descriptionData === 'string') {
+      try {
+        descriptionData = JSON.parse(descriptionData);
+      } catch (e) {
+        // If parsing fails, treat it as a plain string
+        text = descriptionData;
+        descriptionData = null; // Prevent further object processing
+      }
+    }
+
+    if (descriptionData && typeof descriptionData === 'object') {
+      header = descriptionData.header || '';
+      text = descriptionData.text || '';
     } else if (typeof experience.description === 'string') {
       text = experience.description;
     }

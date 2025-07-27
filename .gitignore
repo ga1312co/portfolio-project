@@ -1,17 +1,14 @@
-# Node & backend
-backend/node_modules/
-backend/.env
+# Dependencies
+node_modules/
 
-# React frontend
-frontend/node_modules/
-frontend/.env
-frontend/blender/
+# Build files
+dist/
+dist-ssr/
 
-# Prisma
-**/.prisma/
-
-# OS/system files
-.DS_Store
+# Local environment variables
+.env
+.env.*
+*.local
 
 # Logs
 logs
@@ -22,21 +19,15 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# OS/system files
+.DS_Store
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-# Keep environment variables out of version control
-.env.*
