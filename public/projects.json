@@ -1,5 +1,12 @@
 [
   {
+    "id": 1,
+    "title": "Wedding AI Assistant",
+    "description": "{\"role\": \"AI API intergration, Full stack development\", \"tech\": [\"Node.js\", \"React\"], \"summary\": \"Built a wedding assistant using Gemini API. The user (wedding guests) can interact with the AI to get information about the wedding, such as the schedule, venue details, and more.\", \"GitHubLink\": \"https://github.com/ga1312co/wedding-ai-assistant\"}",
+    "order": null,
+    "images": [{"id": 8, "url": "/images/wedding_assistant_screenshot.png", "caption": "Screenshot of Web Application"}]
+  },
+  {
     "id": 3,
     "title": "Fiskeboden – C#",
     "description": "{\"role\": \"Software architecture, data modeling, and backend development\", \"tech\": [\"C#\", \"MS SQL\"], \"summary\": \"Built a full-stack project using .NET and C# with a MAUI application, REST clients, and a virtual machine hosted in Azure.\", \"GitHubLink\": \"https://github.com/ga1312co/CSharp-Fiskeboden-SchoolProject\"}",
