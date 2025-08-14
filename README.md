@@ -2,6 +2,8 @@
 
 ## https://www.gabrielcolt.com/
 
+<img src="public/images/waiting_room.png" alt="Waiting Room snapshit" width="500"/>
+
 **TECH STACK** 🧑‍💻🧑‍💻🧑‍💻
 
 *Database - PostgreSQL 🤠 \ Deployment - Docker & RENDER 😈\ Backend - Node.js 💀\ Frontend - React, Three.js 🐗*
