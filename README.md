@@ -10,7 +10,7 @@
 
 **BRANCHES**🌳🌳🌳
 
-**main** - Production branch, automatic deploy on commit
+**main** - Production branch, automatic (NOW STATIC) deploy to render on commit
 
 **deployment_AWS_notActive** - 1st production branch, set up for deployment on AWS using AWS Fargate
 
