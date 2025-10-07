@@ -22,7 +22,7 @@
 1. DOCKER & PostgreSQL ✅✅✅
 3. Backend-API in Node.js/Express ✅✅✅
 4. Build React frontend ✅✅✅
-5. Deployment in AWS ✅✅✅ (EXPENSIVE - MOVED TO RENDER AFTER COMPLETING IT
+5. Deployment in AWS ✅✅✅ (EXPENSIVE - MOVED TO RENDER AFTER COMPLETING IT. ALSO REMOVED THE BACKEND TO HOST THE PAGE STATICALLY.)
 
 **MIGHT - DO** 🤔🤔🤔
 1. Admin Panel (CMS) with authentication (Would have to reactivate the backend, probably won't)
