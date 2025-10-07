@@ -333,7 +333,7 @@ export default function HoverPopup({ hoveredObjectInfo, onProjectHover }) {
         </div>
         <div className="popup-resume-section">
           <a
-            href="https://drive.google.com/file/d/1Wz76jZe_rYO4U02gY9HpvjIBqV09ma3j/view?usp=sharing"
+            href="https://drive.google.com/file/d/1I77uT08AR8ZPxPDxOd3_PQdhklBwvzfY/view?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
             className="resume-link"
