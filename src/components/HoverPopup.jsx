@@ -200,10 +200,8 @@ export default function HoverPopup({ hoveredObjectInfo, onProjectHover }) {
     return {
       title: 'ABOUT THIS PAGE',
       details: [
-        '- UI Created with React and Three.js',
+        '- UI Created with React and Blander',
         '- 3D Models from Blender',
-        '- API Integration with Node.js and Express',
-        '- Database(Postgre & Prisma)-driven content management',
         '- Containerized with Docker',
         ' ',
         'FIRST DEPLOYMENT IN AWS:',
@@ -213,8 +211,7 @@ export default function HoverPopup({ hoveredObjectInfo, onProjectHover }) {
         'Did this to learn AWS services - but expensive to run 💸💸💸',
         ' ',
         'SECOND DEPLOYMENT IN RENDER:',
-        'Hosted on RENDER with a docker container for the backend and static files for the frontend.',
-        'PostgreSQL database on RENDER.',
+        'Hosted on RENDER with static files for the frontend.',
         'Frontend deploys on every push to main branch.',
         'EASY TO MAINTAIN AND CHEAP TO HOST 😎😎',
       ],
